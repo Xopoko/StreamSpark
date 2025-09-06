@@ -1,0 +1,24 @@
+{% extends "layouts/base.html" %}
+{% block title %}Streamer Command Center{% endblock %}
+{% block body_class %}dashboard-bg{% endblock %}
+
+{% block content %}
+<div x-data="window.streamingApp()">
+  {% include "partials/header.html" %}
+  {% include "partials/nav.html" %}
+
+  <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="px-4">
+      {% include "components/dashboard/overview.html" %}
+      {% include "components/dashboard/donations.html" %}
+      {% include "components/dashboard/generations.html" %}
+      {% include "components/dashboard/console.html" %}
+      {% include "components/dashboard/settings.html" %}
+    </div>
+  </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/dashboard.js"></script>
+{% endblock %}

@@ -1,0 +1,31 @@
+<nav class="bg-black/10 backdrop-blur-md border-b border-white/5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex space-x-8">
+      <button @click="activeTab = 'statistics'"
+              :class="activeTab === 'statistics' ? 'border-purple-400 text-white' : 'border-transparent text-gray-300 hover:text-white hover:border-gray-300'"
+              class="py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+        <i class="fas fa-chart-bar mr-2"></i>Dashboard
+      </button>
+      <button @click="activeTab = 'donations'"
+              :class="activeTab === 'donations' ? 'border-purple-400 text-white' : 'border-transparent text-gray-300 hover:text-white hover:border-gray-300'"
+              class="py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+        <i class="fas fa-heart mr-2"></i>Donations
+      </button>
+      <button @click="activeTab = 'generations'"
+              :class="activeTab === 'generations' ? 'border-purple-400 text-white' : 'border-transparent text-gray-300 hover:text-white hover:border-gray-300'"
+              class="py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+        <i class="fas fa-magic mr-2"></i>Generations
+      </button>
+      <button @click="activeTab = 'console'"
+              :class="activeTab === 'console' ? 'border-purple-400 text-white' : 'border-transparent text-gray-300 hover:text-white hover:border-gray-300'"
+              class="py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+        <i class="fas fa-terminal mr-2"></i>System Console
+      </button>
+      <button @click="activeTab = 'settings'"
+              :class="activeTab === 'settings' ? 'border-purple-400 text-white' : 'border-transparent text-gray-300 hover:text-white hover:border-gray-300'"
+              class="py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+        <i class="fas fa-cog mr-2"></i>Settings
+      </button>
+    </div>
+  </div>
+</nav>

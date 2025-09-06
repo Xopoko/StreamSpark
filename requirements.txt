@@ -1,0 +1,10 @@
+# StreamSpark runtime dependencies for pip users
+# If you use 'uv', prefer: uv sync
+
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.6
+jinja2>=3.1.4
+aiofiles>=23.2.1
+requests>=2.32.4
+typing-extensions>=4.14.1
+python-dotenv>=1.0.1

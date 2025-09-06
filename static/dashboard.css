@@ -1,0 +1,14 @@
+/* Dashboard-only styles (kept separate from widget styles) */
+
+/* Gradient background for dashboard pages */
+body.dashboard-bg {
+  background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #ec4899 100%);
+  min-height: 100vh;
+}
+
+/* Reusable card container */
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}

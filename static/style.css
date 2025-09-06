@@ -1,0 +1,365 @@
+/* Donation Celebration Widget Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: transparent;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+.widget-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#celebrationVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+}
+
+/* Idle State */
+.idle-state {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #ffffff;
+    z-index: 1;
+}
+
+.logo {
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.logo svg {
+    filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.3));
+}
+
+.status-text {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    opacity: 0.9;
+}
+
+.pulse-animation {
+    width: 160px;
+    height: 160px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse 2s ease-in-out infinite;
+    z-index: -1;
+}
+
+/* Loading State */
+.loading-state {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #ffffff;
+    z-index: 2;
+}
+
+.spinner {
+    margin-bottom: 20px;
+}
+
+/* Status Indicator */
+.status-indicator {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #ffffff;
+    backdrop-filter: blur(10px);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4CAF50;
+    animation: statusBlink 2s ease-in-out infinite;
+}
+
+.status-dot.error {
+    background: #F44336;
+}
+
+.status-dot.warning {
+    background: #FF9800;
+}
+
+.status-label {
+    font-weight: 500;
+}
+
+/* Debug Info (hidden by default, shown only when not in OBS) */
+.debug-info {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #ffffff;
+    min-width: 250px;
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.debug-info:hover {
+    opacity: 1;
+}
+
+.debug-panel h3 {
+    margin-bottom: 12px;
+    color: #FFD700;
+    font-size: 14px;
+}
+
+.debug-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.debug-label {
+    color: #cccccc;
+    font-weight: 500;
+}
+
+.debug-value {
+    color: #ffffff;
+    font-weight: 400;
+    text-align: right;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Animations */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 0.1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0;
+    }
+}
+
+@keyframes statusBlink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Video transition effects */
+.video-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.video-fade-out {
+    animation: fadeOut 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .video-container {
+        max-width: 95%;
+        margin: 0 auto;
+    }
+    
+    .status-text {
+        font-size: 16px;
+    }
+    
+    .debug-info {
+        min-width: 200px;
+        font-size: 11px;
+    }
+}
+
+/* Test Controls */
+.test-controls {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.test-controls:hover {
+    opacity: 1;
+}
+
+.test-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background: rgba(102, 126, 234, 0.9);
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.test-btn:hover {
+    background: rgba(102, 126, 234, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Hide debug info and test controls in OBS (when window is exactly 800x450) */
+@media (width: 800px) and (height: 450px) {
+    .debug-info {
+        display: none;
+    }
+    
+    .status-indicator {
+        display: none;
+    }
+    
+    .test-controls {
+        display: none;
+    }
+}
+
+/* Special celebration effects */
+.celebration-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #FFD700;
+    animation: confettiFall 3s linear infinite;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Error state */
+.error-state {
+    color: #F44336;
+    text-align: center;
+}
+
+.error-state .status-text {
+    color: #F44336;
+}
+
+/* Dashboard shared styles (moved from inline CSS) */
+.card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Optional dashboard background helper */
+body.dashboard-bg {
+    background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #ec4899 100%);
+    min-height: 100vh;
+}

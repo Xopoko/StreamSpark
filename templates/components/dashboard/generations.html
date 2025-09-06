@@ -1,0 +1,114 @@
+<div x-show="activeTab === 'generations'" x-transition class="space-y-6">
+  <!-- Custom Generation Panel -->
+  <div class="card rounded-xl p-6">
+    <h2 class="text-xl font-bold text-white mb-4">Custom Video Generation</h2>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-gray-300 text-sm font-medium mb-2">Custom Video Prompt</label>
+        <textarea x-model="customPrompt" 
+                  placeholder="A celebration with fireworks and confetti..." 
+                  rows="4" 
+                  class="w-full bg-black/30 border border-white/20 text-white rounded-lg px-3 py-2 placeholder-gray-400"></textarea>
+      </div>
+
+      <!-- Live Generation Progress -->
+      <div x-show="generationStatus && (generationStatus.active || ['starting','queued','waiting','active','generating','completed','downloading'].includes((generationStatus.status||'').toLowerCase()))"
+           class="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center text-purple-300">
+            <i class="fas fa-spinner fa-spin mr-2" x-show="generationStatus.active"></i>
+            <i class="fas fa-check-circle mr-2 text-green-400" x-show="!generationStatus.active && (generationStatus.status||'').toLowerCase() === 'done'"></i>
+            <span class="text-sm" x-text="`Status: ${generationStatus.status}`"></span>
+          </div>
+          <div class="text-sm text-gray-400" x-show="generationStatus.elapsed !== undefined">
+            <span x-text="`Elapsed: ${generationStatus.elapsed || 0}s`"></span>
+          </div>
+        </div>
+        <div class="w-full bg-black/30 rounded-full h-2 overflow-hidden">
+          <div class="bg-purple-500 h-2 transition-all" :style="`width: ${Math.min(100, generationStatus.progress || 0)}%`"></div>
+        </div>
+        <template x-if="generationStatus.donation && generationStatus.donation.message">
+          <div class="text-xs text-gray-400 mt-2 truncate">
+            <span class="text-gray-500">Message:</span>
+            <span x-text="generationStatus.donation.message"></span>
+          </div>
+        </template>
+      </div>
+      
+      <button @click="generateCustomVideo" :disabled="isGenerating" 
+              class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-opacity disabled:opacity-50">
+        <span x-show="!isGenerating">
+          <i class="fas fa-magic mr-2"></i>
+          Generate Custom Video
+        </span>
+        <span x-show="isGenerating">
+          <i class="fas fa-spinner fa-spin mr-2"></i>
+          Generating Video...
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Video Gallery -->
+  <div class="card rounded-xl p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-bold text-white">Video Gallery</h2>
+      <button @click="refreshVideoGallery" 
+              class="text-gray-400 hover:text-white transition-colors px-2 py-1 rounded"
+              title="Refresh gallery">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+    </div>
+    
+    <div x-show="allVideos.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <template x-for="video in allVideos" :key="video.filename">
+        <div class="bg-black/20 rounded-lg overflow-hidden">
+          <!-- Video Preview -->
+          <div class="aspect-video bg-gray-800 relative">
+            <video :src="video.url" 
+                   class="w-full h-full object-cover"
+                   preload="metadata"
+                   controls
+                   muted>
+              Your browser does not support the video element.
+            </video>
+          </div>
+          
+          <!-- Video Info -->
+          <div class="p-3">
+            <h3 class="font-medium text-white text-sm mb-1" x-text="video.filename"></h3>
+            <div class="flex items-center justify-between text-xs text-gray-400">
+              <span x-text="formatFileSize(video.size)"></span>
+              <span x-text="formatDate(video.created)"></span>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-between mt-2 space-x-2">
+              <button @click="playVideoInOBS(video.url)"
+                      class="flex-1 bg-green-600 hover:bg-green-700 text-white py-1 px-2 rounded text-xs transition-colors">
+                <i class="fas fa-play mr-1"></i>
+                Play in OBS
+              </button>
+              <button @click="downloadVideo(video.url, video.filename)"
+                      class="bg-blue-600 hover:bg-blue-700 text-white py-1 px-2 rounded text-xs transition-colors"
+                      title="Download">
+                <i class="fas fa-download"></i>
+              </button>
+              <button @click="deleteVideo(video.filename)"
+                      class="bg-red-600 hover:bg-red-700 text-white py-1 px-2 rounded text-xs transition-colors"
+                      title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+    
+    <div x-show="allVideos.length === 0" class="bg-black/20 rounded-lg p-6 text-center">
+      <i class="fas fa-video text-gray-500 text-2xl mb-2"></i>
+      <p class="text-gray-400 text-sm">No videos generated yet</p>
+      <p class="text-gray-500 text-xs mt-1">Generate your first video using the custom prompt or presets above</p>
+    </div>
+  </div>
+</div>
