@@ -3,6 +3,8 @@ import time
 from datetime import datetime
 import pytest
 import core.state as state
+from typing import cast
+from core.container import AppContainer
 
 # Reuse client fixture from tests/conftest.py
 # Tests for routes/api_settings.py
@@ -47,7 +49,7 @@ def make_container(cfg_overrides=None):
 
 def test_get_settings_and_connection_status(client):
     c = make_container()
-    state.set_container(c)
+    state.set_container(cast(AppContainer, c))
 
     r = client.get("/api/settings")
     assert r.status_code == 200
@@ -63,7 +65,7 @@ def test_get_settings_and_connection_status(client):
 
 def test_set_donation_alerts_token_starts_and_stops_poller(client, monkeypatch):
     c = make_container()
-    state.set_container(c)
+    state.set_container(cast(AppContainer, c))
 
     # initially no token
     resp = client.post("/api/donation-alerts-token", json={"token": ""})
@@ -86,7 +88,7 @@ def test_set_donation_alerts_token_starts_and_stops_poller(client, monkeypatch):
 def test_get_and_set_threshold_with_conversion(client):
     # container with currency conversion behavior
     c = make_container()
-    state.set_container(c)
+    state.set_container(cast(AppContainer, c))
 
     # GET threshold
     r = client.get("/api/threshold")
@@ -109,7 +111,7 @@ def test_get_and_set_threshold_with_conversion(client):
 
 def test_access_token_endpoints(client):
     c = make_container()
-    state.set_container(c)
+    state.set_container(cast(AppContainer, c))
 
     # Initially no token
     r = client.get("/api/access-token")
@@ -136,7 +138,7 @@ def test_aiml_status_endpoint(client):
     c.donation_poller.total_donations_processed = 5
     c.donation_poller.total_videos_generated = 2
     c.donation_poller.last_poll_time = datetime.now()
-    state.set_container(c)
+    state.set_container(cast(AppContainer, c))
 
     r = client.get("/api/aiml-status")
     assert r.status_code == 200

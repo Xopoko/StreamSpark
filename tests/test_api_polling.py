@@ -3,6 +3,8 @@ import time
 from datetime import datetime
 import pytest
 import core.state as state
+from typing import cast
+from core.container import AppContainer
 
 # Tests for routes/api_polling.py
 
@@ -53,7 +55,7 @@ def test_get_donations_transforms_and_returns(client):
         {"id": "d2", "username": "Bob", "amount": 5, "currency": "RUB", "message": "", "created_at": "now2"},
     ]
     c = make_container_with_poller(recents=recents)
-    state.set_container(c)
+    state.set_container(cast(AppContainer, c))
 
     r = client.get("/api/donations?limit=2")
     assert r.status_code == 200
@@ -65,7 +67,7 @@ def test_get_donations_transforms_and_returns(client):
 
 def test_test_donation_alerts_starts_polling_on_success(client):
     c = make_container_with_poller(recents=[], test_conn_success=True)
-    state.set_container(c)
+    state.set_container(cast(AppContainer, c))
 
     r = client.get("/api/test-donation-alerts")
     assert r.status_code == 200
@@ -77,7 +79,7 @@ def test_test_donation_alerts_starts_polling_on_success(client):
 
 def test_test_donation_alerts_failure_does_not_start(client):
     c = make_container_with_poller(recents=[], test_conn_success=False)
-    state.set_container(c)
+    state.set_container(cast(AppContainer, c))
 
     r = client.get("/api/test-donation-alerts")
     assert r.status_code == 200
@@ -89,7 +91,7 @@ def test_test_donation_alerts_failure_does_not_start(client):
 def test_start_stop_polling_endpoints_respect_token_and_toggle(client):
     c = make_container_with_poller()
     # no token configured -> start should fail
-    state.set_container(c)
+    state.set_container(cast(AppContainer, c))
     resp = client.post("/api/start-polling")
     assert resp.status_code == 200
     assert resp.json()["success"] is False

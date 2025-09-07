@@ -4,6 +4,8 @@ from datetime import datetime
 import pytest
 import core.state as state
 import core.logging_utils as logging_utils
+from typing import cast
+from core.container import AppContainer
 
 # Reuse client fixture
 
@@ -71,7 +73,7 @@ def test_stats_endpoint_returns_counts_and_uses_polling_stats(tmp_path, client):
     container = make_container_with_poller_stats(tmp_path)
     # create a video file to be counted
     (tmp_path / "sample.mp4").write_bytes(b"\x00")
-    state.set_container(container)
+    state.set_container(cast(AppContainer, container))
 
     r = client.get("/api/stats")
     assert r.status_code == 200

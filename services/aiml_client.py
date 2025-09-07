@@ -63,7 +63,7 @@ class AIMLClient:
             self.logger.error(f"Error starting AIML video generation: {e}")
             return None
 
-    def wait_for_completion(self, generation_id: str, max_wait_time: int = 1000, poll_interval: int = 10, progress_callback: Optional[Any] = None) -> Optional[str]:
+    def wait_for_completion(self, generation_id: str, max_wait_time: float = 1000.0, poll_interval: float = 10.0, progress_callback: Optional[Any] = None) -> Optional[str]:
         """Wait for AIML video generation to complete and return video URL."""
         try:
             start_time = time.time()
