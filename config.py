@@ -14,7 +14,6 @@ class Config:
         
         # DonationAlerts configuration
         self.donationalerts_api_token = None
-        self.donationalerts_api_base = 'https://www.donationalerts.com/api/v1'
         # OAuth client config
         # Support multiple env var names for convenience
         # Prefer explicit DONATIONALERTS_CLIENT_ID/SECRET, but fall back to DA_CLIENT_ID/SECRET, then DONATIONALERTS_API_KEY as client_id
@@ -29,9 +28,7 @@ class Config:
         self.donation_alerts_token = ''
         # Refresh token and expiry (optional)
         self.donationalerts_refresh_token = ''
-        self.donationalerts_expires_at = 0
-        # Optional token type (e.g., "Bearer")
-        self.donationalerts_token_type = ''
+        # (removed donationalerts_expires_at and donationalerts_token_type per vulture)
 
         # AIML API configuration (replaces Google Cloud)
         self.aiml_api_key = os.getenv('AIMLAPI_KEY')
