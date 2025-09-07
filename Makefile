@@ -33,17 +33,9 @@ help: ## Show this help
 env: ## Create local .env from example if missing
 	@if [ ! -f .env ]; then cp .env.example .env && echo "Created .env from .env.example"; else echo ".env already exists"; fi
 
-install: ## Install dependencies (prefers uv if available; falls back to venv + pip)
-	@if command -v uv >/dev/null 2>&1; then \
-		echo "[install] Using uv to sync environment"; \
-		uv sync; \
-	else \
-		echo "[install] uv not found, using venv + pip"; \
-		$(PYTHON) -m venv .venv || python3 -m venv .venv || python -m venv .venv; \
-		if [ -x ".venv/bin/python" ]; then VENV_PY=".venv/bin/python"; else VENV_PY=".venv/Scripts/python.exe"; fi; \
-		"$$VENV_PY" -m pip install -U pip; \
-		"$$VENV_PY" -m pip install -r requirements.txt; \
-	fi
+install: ## Install dependencies (cross-platform: use scripts/install.py)
+	@echo "[install] Running cross-platform installer via Python script"
+	@$(PYTHON) scripts/install.py
 
 uv-sync: ## Sync environment using uv (uses uv.lock/pyproject.toml)
 	@uv sync
