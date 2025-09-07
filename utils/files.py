@@ -1,4 +1,4 @@
-"""File-related utilities and validations."""
+r"""File-related utilities and validations."""
 
 from typing import Final
 
@@ -10,7 +10,7 @@ _ALLOWED_FILENAME_CHARS: Final[set[str]] = set(
 
 
 def is_safe_video_filename(filename: str) -> bool:
-    """
+    r"""
     Validate a video filename to prevent path traversal and only allow safe characters.
 
     Rules:

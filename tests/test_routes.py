@@ -59,7 +59,8 @@ def test_test_donation_post_no_video_below_threshold(client):
 
 def test_test_donation_post_bad_json_returns_error(client):
     # Send invalid JSON body (empty body with JSON content-type triggers JSON parse error)
-    resp = client.post("/test-donation", data="", headers={"content-type": "application/json"})
+    # Use httpx 'content' param to avoid DeprecationWarning about raw data
+    resp = client.post("/test-donation", content=b"", headers={"content-type": "application/json"})
     assert resp.status_code == 200
     data = resp.json()
     # The endpoint returns {"success": False, "error": "..."} on exceptions

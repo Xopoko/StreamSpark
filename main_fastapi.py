@@ -16,6 +16,7 @@ from typing import Any, Dict, Optional
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from contextlib import asynccontextmanager
 # Prefer Starlette's middleware (correct ASGI types); fall back to Uvicorn's if unavailable
 try:
     from starlette.middleware.proxy_headers import ProxyHeadersMiddleware  # type: ignore[import]
@@ -65,10 +66,31 @@ def create_app() -> FastAPI:
     """Application factory."""
     setup_logging()
 
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        # Initialize container and apply startup config
+        container = init_container()
+        set_container(container)
+        # Best-effort config validation (don't crash the ASGI server)
+        valid = validate_configuration()
+        if not valid:
+            logging.getLogger(__name__).warning("Configuration invalid. Some features may not work until fixed.")
+        logging.getLogger(__name__).info("StreamSpark FastAPI app started")
+        try:
+            yield
+        finally:
+            try:
+                container = get_container()
+                container.donation_poller.stop_polling()
+            except Exception:
+                pass
+            logging.getLogger(__name__).info("StreamSpark FastAPI app stopped")
+
     app = FastAPI(
         title="StreamSpark",
         description="Donation Celebration Video Generator - FastAPI",
         version="0.1.0",
+        lifespan=lifespan,
     )
 
     # Respect X-Forwarded-* headers (similar to Flask ProxyFix)
@@ -87,24 +109,6 @@ def create_app() -> FastAPI:
     app.include_router(api_polling_router)
     app.include_router(da_oauth_router)
 
-    @app.on_event("startup")
-    def on_startup() -> None:
-        container = init_container()
-        set_container(container)
-        # Best-effort config validation (don't crash the ASGI server)
-        valid = validate_configuration()
-        if not valid:
-            logging.getLogger(__name__).warning("Configuration invalid. Some features may not work until fixed.")
-        logging.getLogger(__name__).info("StreamSpark FastAPI app started")
-
-    @app.on_event("shutdown")
-    def on_shutdown() -> None:
-        try:
-            container = get_container()
-            container.donation_poller.stop_polling()
-        except Exception:
-            pass
-        logging.getLogger(__name__).info("StreamSpark FastAPI app stopped")
 
     # Ported endpoints from legacy Flask main.py
 
