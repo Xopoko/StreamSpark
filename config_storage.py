@@ -1,26 +1,22 @@
 #!/usr/bin/env python3
 """
-DEPRECATED: No database storage.
+Minimal deprecated config storage shim.
 
-This module used to provide a SQLite-backed configuration store.
-The application no longer uses any database. All configuration is kept in-memory
-via the Config object (see config.py), and endpoints update runtime state directly.
-
-This stub remains only to avoid import errors if any legacy code references it.
-All methods are no-ops or return defaults.
+The original module provided a SQLite-backed store long ago. The application
+now keeps configuration in-memory (see config.py). This minimal shim keeps
+the public API (no-op) to avoid breaking any legacy imports.
 """
 
 import logging
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 
 class ConfigStorage:
-    """Deprecated no-op config storage."""
+    """Deprecated no-op config storage (minimal shim)."""
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.logger.warning("config_storage is deprecated and no longer used. All data is in-memory.")
-        # Optional in-memory fallback to avoid breaking behavior where 'True' return is expected
+        self.logger.warning("config_storage is deprecated and acting as a no-op shim.")
         self._app: Dict[str, Any] = {}
 
     # App-level config
@@ -67,7 +63,7 @@ class ConfigStorage:
     def get_user_by_id(self, user_id):
         return None
 
-    # Exchange rates cache (now handled in-memory in CurrencyConverter)
+    # Exchange rates cache (no-op shim)
     def get_exchange_rate(self, from_currency, to_currency):
         return None
 

@@ -3,7 +3,6 @@ import types
 from datetime import datetime
 import pytest
 import core.state as state
-import core.logging_utils as logging_utils
 from typing import cast
 from core.container import AppContainer
 

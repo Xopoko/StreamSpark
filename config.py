@@ -48,9 +48,7 @@ class Config:
         self.donation_threshold_currency = 'RUB'  # User-configurable currency
         
         # Video generation settings for AIML API
-        self.video_duration_seconds = "8s"  # 8 second videos
-        self.video_aspect_ratio = "16:9"
-        self.video_resolution = "720p"
+        # (video_duration_seconds, video_aspect_ratio, video_resolution removed)
         
         # File paths
         self.videos_directory = 'generated_videos'
