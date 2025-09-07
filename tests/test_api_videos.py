@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 import core.state as state
+from typing import cast
+from core.container import AppContainer
 
 # Reuse client fixture from tests/conftest.py
 
@@ -57,7 +59,7 @@ def test_recent_and_all_videos_and_delete_and_play(client, tmp_path):
     f2.write_bytes(b"\x00" * 20)
 
     container = make_container_with_obs(videos_dir)
-    state.set_container(container)
+    state.set_container(cast(AppContainer, container))
 
     # recent videos
     r = client.get("/api/recent-videos")

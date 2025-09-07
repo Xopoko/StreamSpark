@@ -1,77 +1,73 @@
 #!/usr/bin/env python3
 """
-DEPRECATED: No database storage.
+Minimal deprecated config storage shim.
 
-This module used to provide a SQLite-backed configuration store.
-The application no longer uses any database. All configuration is kept in-memory
-via the Config object (see config.py), and endpoints update runtime state directly.
-
-This stub remains only to avoid import errors if any legacy code references it.
-All methods are no-ops or return defaults.
+This file provides a no-op API-compatible shim. Methods deliberately accept
+*args/**kwargs so parameters that are unused do not trigger static analysis
+warnings and the API remains compatible with legacy callers.
 """
 
 import logging
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 
 class ConfigStorage:
-    """Deprecated no-op config storage."""
+    """Deprecated no-op config storage (minimal shim)."""
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.logger.warning("config_storage is deprecated and no longer used. All data is in-memory.")
-        # Optional in-memory fallback to avoid breaking behavior where 'True' return is expected
+        self.logger.warning("config_storage is deprecated and acting as a no-op shim.")
         self._app: Dict[str, Any] = {}
 
     # App-level config
-    def get_app_config(self, key: str, default=None):
+    def get_app_config(self, key: str, default=None, *args, **kwargs):
         return self._app.get(key, default)
 
-    def set_app_config(self, key: str, value, value_type: str = "string", description: Optional[str] = None) -> bool:
+    def set_app_config(self, key: str, value, *args, **kwargs) -> bool:
         self._app[key] = value
         return True
 
     # OAuth tokens (legacy API)
-    def set_user_oauth_token(self, user_id, access_token, refresh_token=None, token_type="Bearer", expires_at=None) -> bool:
+    def set_user_oauth_token(self, *args, **kwargs) -> bool:
         return True
 
-    def get_user_oauth_token(self, user_id):
+    def get_user_oauth_token(self, *args, **kwargs):
         return None
 
     # User config (legacy API)
-    def ensure_user_exists(self, user_id, email=None, name=None) -> bool:
+    def ensure_user_exists(self, *args, **kwargs) -> bool:
         return True
 
-    def init_user_config(self, user_id) -> None:
+    def init_user_config(self, *args, **kwargs) -> None:
         return None
 
-    def get_config(self, user_id, key, default=None):
-        return default
+    def get_config(self, *args, **kwargs):
+        return None
 
-    def set_config(self, user_id, key, value, value_type="string", description=None) -> bool:
+    def set_config(self, *args, **kwargs) -> bool:
         return True
 
-    def get_all_config(self, user_id):
+    def get_all_config(self, *args, **kwargs):
         return {}
 
-    def delete_config(self, user_id, key) -> bool:
+    def delete_config(self, *args, **kwargs) -> bool:
         return True
 
     # Users (legacy API)
-    def create_user(self, email, password, first_name=None, last_name=None):
+    def create_user(self, *args, **kwargs):
         return None
 
-    def get_user_by_email(self, email):
+    def get_user_by_email(self, *args, **kwargs):
         return None
 
-    def get_user_by_id(self, user_id):
+    def get_user_by_id(self, *args, **kwargs):
         return None
 
-    # Exchange rates cache (now handled in-memory in CurrencyConverter)
-    def get_exchange_rate(self, from_currency, to_currency):
+    # Exchange rates cache (no-op shim)
+    def get_exchange_rate(self, *args, **kwargs):
         return None
 
-    def set_exchange_rate(self, from_currency, to_currency, rate, cache_minutes=5, source=None) -> bool:
+    def set_exchange_rate(self, *args, **kwargs) -> bool:
         return True
 
 

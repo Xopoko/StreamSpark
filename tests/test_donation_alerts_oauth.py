@@ -3,6 +3,8 @@ import time
 import urllib.parse
 import pytest
 import core.state as state
+from typing import cast
+from core.container import AppContainer
 
 class MockResp:
     def __init__(self, status_code=200, json_data=None, text=""):
@@ -51,7 +53,7 @@ def make_container_for_oauth():
 
 def test_oauth_login_missing_config(client):
     c = make_container_for_oauth()
-    state.set_container(c)
+    state.set_container(cast(AppContainer, c))
 
     r = client.get("/api/da/oauth/login")
     assert r.status_code == 400
@@ -62,7 +64,7 @@ def test_oauth_login_missing_config(client):
 
 def test_oauth_callback_missing_code(client):
     c = make_container_for_oauth()
-    state.set_container(c)
+    state.set_container(cast(AppContainer, c))
 
     r = client.get("/api/da/oauth/callback")
     assert r.status_code == 400
@@ -76,7 +78,7 @@ def test_oauth_callback_success_and_disconnect(monkeypatch, client):
     c.config.donationalerts_client_id = "cid"
     c.config.donationalerts_client_secret = "csecret"
     c.config.donationalerts_redirect_uri = "http://localhost:5002/api/da/oauth/callback"
-    state.set_container(c)
+    state.set_container(cast(AppContainer, c))
 
     # mock token exchange
     def fake_post(url, data=None, timeout=15):

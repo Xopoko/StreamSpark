@@ -69,7 +69,7 @@ def test_wait_for_completion_completed(monkeypatch):
         recorded.append(info)
 
     # Use small poll interval to avoid long sleeps
-    url = client.wait_for_completion("gen-1", max_wait_time=2, poll_interval=0.01, progress_callback=progress_cb)
+    url = client.wait_for_completion("gen-1", max_wait_time=2, poll_interval=0, progress_callback=progress_cb)
     assert url == "http://example.com/v.mp4"
     # Ensure progress callback was invoked at least twice (poll + completed)
     assert any(i.get("phase") == "completed" for i in recorded)
@@ -83,7 +83,7 @@ def test_wait_for_completion_error_status(monkeypatch):
 
     monkeypatch.setattr("services.aiml_client.requests.get", fake_get)
 
-    res = client.wait_for_completion("gen-x", max_wait_time=1, poll_interval=0.01)
+    res = client.wait_for_completion("gen-x", max_wait_time=1, poll_interval=0)
     assert res is None
 
 
@@ -97,7 +97,7 @@ def test_wait_for_completion_timeout(monkeypatch):
     # avoid sleeping for real
     monkeypatch.setattr("time.sleep", lambda s: None)
 
-    res = client.wait_for_completion("gen-timeout", max_wait_time=0.05, poll_interval=0.01)
+    res = client.wait_for_completion("gen-timeout", max_wait_time=0.05, poll_interval=0)
     assert res is None
 
 

@@ -34,7 +34,7 @@ class DonationAlertsPoller:
         # Polling state
         self.is_running = False
         self.polling_thread = None
-        self.last_donation_id = None
+        # (removed last_donation_id per vulture)
         self.processed_donations = set()  # Track processed donation IDs (in-memory only)
         self._processed_order = []  # Maintain insertion order for trimming
         self._processed_lock = threading.Lock()

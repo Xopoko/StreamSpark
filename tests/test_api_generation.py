@@ -6,6 +6,8 @@ from pathlib import Path
 import pytest
 import core.state as state
 from fastapi.testclient import TestClient
+from typing import cast
+from core.container import AppContainer
 
 import main_fastapi
 
@@ -29,7 +31,7 @@ def test_generation_status_endpoint(client):
             return {"active": False, "progress": 42}
 
     container = make_container_with_vg(VG())
-    state.set_container(container)
+    state.set_container(cast(AppContainer, container))
 
     resp = client.get("/api/generation-status")
     assert resp.status_code == 200
@@ -44,7 +46,7 @@ def test_get_and_set_system_prompt(client):
         system_prompt = ""
 
     container = make_container_with_vg(VG())
-    state.set_container(container)
+    state.set_container(cast(AppContainer, container))
 
     # GET should return default or empty string
     resp = client.get("/api/system-prompt")
@@ -75,7 +77,7 @@ def test_generate_custom_video_starts_background_and_uses_vg(client, monkeypatch
 
     container = make_container_with_vg(VG())
     # set container so endpoint will use it
-    state.set_container(container)
+    state.set_container(cast(AppContainer, container))
 
     # Make Thread execute synchronously to avoid timing issues
     class ImmediateThread:
@@ -106,7 +108,7 @@ def test_generate_veo_video_success_and_failure(client, tmp_path):
             return str(video_file)
 
     container_s = make_container_with_vg(VGSuccess())
-    state.set_container(container_s)
+    state.set_container(cast(AppContainer, container_s))
 
     resp = client.post("/api/generate-veo-video", json={"prompt": "Hello Veo"})
     assert resp.status_code == 200
@@ -120,7 +122,7 @@ def test_generate_veo_video_success_and_failure(client, tmp_path):
             return None
 
     container_f = make_container_with_vg(VGFail())
-    state.set_container(container_f)
+    state.set_container(cast(AppContainer, container_f))
 
     resp2 = client.post("/api/generate-veo-video", json={"prompt": "Hello Veo"})
     assert resp2.status_code == 500
