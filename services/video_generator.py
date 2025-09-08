@@ -42,8 +42,28 @@ class VideoGenerator:
             return False
         return True
     
-    def generate_video(self, donation_info: Dict[str, Any], amount_rub: float, custom_prompt: Optional[str] = None) -> Optional[str]:
-        """Generate celebration video for donation using AIML API (no automatic retries)."""
+    def generate_video(
+        self,
+        donation_info: Dict[str, Any],
+        amount_rub: float,
+        custom_prompt: Optional[str] = None,
+        resolution: Optional[str] = None,
+        duration: Optional[int] = None,
+        negative_prompt: Optional[str] = None,
+        seed: Optional[int] = None,
+        enhance_prompt: Optional[bool] = True,
+        generate_audio: Optional[bool] = True,
+    ) -> Optional[str]:
+        """Generate celebration video for donation using AIML API (no automatic retries).
+
+        Optional parameters (passed to AIML API):
+        - resolution: "720P" or "1080P"
+        - duration: seconds (int)
+        - negative_prompt: string
+        - seed: int
+        - enhance_prompt: bool
+        - generate_audio: bool
+        """
         try:
             if not self._check_api_key():
                 return None
@@ -90,7 +110,15 @@ class VideoGenerator:
                 prompt = base_prompt
             
             # Start video generation task
-            generation_id = self._start_video_generation(prompt)
+            generation_id = self._start_video_generation(
+                prompt,
+                resolution=resolution,
+                duration=duration,
+                negative_prompt=negative_prompt,
+                seed=seed,
+                enhance_prompt=enhance_prompt,
+                generate_audio=generate_audio,
+            )
             if not generation_id:
                 try:
                     self.active_generation = {"active": False, "status": "error", "error": "start_failed"}
@@ -145,10 +173,40 @@ class VideoGenerator:
             self.logger.error(f"Error generating AIML Veo3 video: {e}", exc_info=True)
             return None
     
-    def _start_video_generation(self, prompt: str) -> Optional[str]:
-        """Start video generation task and return generation ID (delegates to AIMLClient)."""
+    def _start_video_generation(
+        self,
+        prompt: str,
+        resolution: Optional[str] = None,
+        duration: Optional[int] = None,
+        negative_prompt: Optional[str] = None,
+        seed: Optional[int] = None,
+        enhance_prompt: Optional[bool] = True,
+        generate_audio: Optional[bool] = True,
+    ) -> Optional[str]:
+        """Start video generation task and return generation ID (delegates to AIMLClient).
+
+        Attempts to call AIMLClient.start_generation with extended keyword arguments
+        when supported; falls back to the simple signature (prompt only) for
+        older/stub clients used in tests.
+        """
         try:
-            return self.client.start_generation(prompt)
+            # Prefer calling the extended signature (if AIMLClient supports it)
+            return self.client.start_generation(
+                prompt=prompt,
+                resolution=resolution,
+                duration=duration,
+                negative_prompt=negative_prompt,
+                seed=seed,
+                enhance_prompt=enhance_prompt,
+                generate_audio=generate_audio,
+            )
+        except TypeError:
+            # Fallback for older/stub clients that accept only (prompt)
+            try:
+                return self.client.start_generation(prompt)
+            except Exception as e:
+                self.logger.error(f"Error starting AIML video generation (fallback): {e}")
+                return None
         except Exception as e:
             self.logger.error(f"Error starting AIML video generation: {e}")
             return None

@@ -30,19 +30,71 @@ class AIMLClient:
             "Content-Type": "application/json",
         }
 
-    def start_generation(self, prompt: str) -> Optional[str]:
-        """Start video generation task and return generation ID."""
+    def start_generation(
+        self,
+        prompt: str,
+        model: str = "google/veo-3.0-fast",
+        resolution: Optional[str] = None,
+        duration: Optional[int] = None,
+        negative_prompt: Optional[str] = None,
+        seed: Optional[int] = None,
+        enhance_prompt: Optional[bool] = True,
+        generate_audio: Optional[bool] = True,
+    ) -> Optional[str]:
+        """
+        Start video generation task and return generation ID.
+
+        Supports optional parameters documented by AIML:
+        - resolution: "720P" or "1080P"
+        - duration: number of seconds (int)
+        - negative_prompt: string
+        - seed: integer
+        - enhance_prompt: bool
+        - generate_audio: bool
+        """
         try:
             url = f"{self.base_url}/generate/video/google/generation"
             data = {
-                "model": "google/veo3",
+                "model": model,
                 "prompt": prompt,
             }
 
-            self.logger.info("Starting AIML Veo3 video generation")
-            self.logger.debug(f"Request data: {json.dumps(data, indent=2)}")
+            # Attach optional parameters only when provided (not None)
+            if resolution is not None:
+                data["resolution"] = resolution
+            if duration is not None:
+                data["duration"] = duration
+            if negative_prompt is not None:
+                data["negative_prompt"] = negative_prompt
+            if seed is not None:
+                data["seed"] = int(seed)
+            if enhance_prompt is not None:
+                data["enhance_prompt"] = bool(enhance_prompt)
+            if generate_audio is not None:
+                data["generate_audio"] = bool(generate_audio)
 
-            response = requests.post(url, json=data, headers=self._headers(), timeout=30)
+            self.logger.info("Starting AIML Veo3 video generation")
+            # Prepare headers and mask Authorization for logs
+            headers = self._headers()
+            try:
+                masked_headers = headers.copy()
+                auth = masked_headers.get("Authorization")
+                if isinstance(auth, str) and len(auth) > 10:
+                    masked_headers["Authorization"] = auth[:10] + "...[redacted]"
+            except Exception:
+                masked_headers = {"Authorization": "[redacted]"}
+            self.logger.debug(f"Request headers: {json.dumps(masked_headers, indent=2)}")
+
+            # Log request body with truncated prompt for safety
+            try:
+                body_for_log = data.copy()
+                if "prompt" in body_for_log and isinstance(body_for_log["prompt"], str):
+                    body_for_log["prompt"] = body_for_log["prompt"][:200] + ("" if len(body_for_log["prompt"]) <= 200 else "...[truncated]")
+            except Exception:
+                body_for_log = {"model": data.get("model", "<unknown>")}
+            self.logger.debug(f"Request body: {json.dumps(body_for_log, indent=2)}")
+
+            response = requests.post(url, json=data, headers=headers, timeout=30)
 
             if response.status_code >= 400:
                 self.logger.error(f"AIML API Error: {response.status_code} - {response.text}")
