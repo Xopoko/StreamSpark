@@ -26,7 +26,8 @@ class DonationWidget {
         this.lastForcedFilename = null;
         this.lastProcessedRequestId = null;
         this.playLockUntil = 0;
-        this.autoplayEnabled = true;
+        this.autoplayEnabled = false;
+        this.initialPoll = true;
         
         // Configuration
         this.checkIntervalMs = 3000; // Check for new videos every 3 seconds
@@ -184,6 +185,7 @@ class DonationWidget {
         }
         try {
             const response = await fetch('/api/latest-video');
+            console.log('🔁 /api/latest-video fetched', response);
             
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
@@ -211,6 +213,15 @@ class DonationWidget {
                 }
 
                 if (wasRequested) {
+                    // Ignore initial requested play immediately after widget loads to avoid accidental autoplay on open
+                    if (this.initialPoll) {
+                        console.log('⏹️ Ignoring requested play on initial poll');
+                        this.lastKnownVideo = videoInfo;
+                        this.updateConnectionStatus('connected');
+                        this.initialPoll = false;
+                        return;
+                    }
+
                     // Avoid re-processing the same request while server TTL is active
                     if (requestId && this.lastProcessedRequestId === requestId) {
                         this.updateConnectionStatus('connected');
@@ -280,6 +291,7 @@ class DonationWidget {
             // Use cache-busting when forcing to avoid browser caching issues on same src
             this.videoElement.autoplay = true;
             const src = force ? `${videoInfo.url}?t=${Date.now()}` : videoInfo.url;
+            console.log('🔧 Setting video src:', src, 'force:', force);
             this.videoElement.src = src;
             // Explicitly (re)load the media after changing src to avoid stray readyState issues
             try { this.videoElement.load(); } catch (_) {}

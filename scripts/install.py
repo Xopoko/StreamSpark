@@ -20,6 +20,24 @@ def main():
     except Exception:
         print("[install] uv not found, using venv + pip")
 
+    # If a .venv already exists and contains a python executable, skip attempting
+    # to recreate the virtualenv (avoids PermissionError when python.exe is owned
+    # by another account or locked). Use the existing venv to install packages.
+    if os.path.isdir(".venv"):
+        if os.name == "nt":
+            existing_py = os.path.join(".venv", "Scripts", "python.exe")
+        else:
+            existing_py = os.path.join(".venv", "bin", "python")
+        if os.path.exists(existing_py):
+            print("[install] .venv detected with python at", existing_py, "- skipping venv creation")
+            try:
+                run([existing_py, "-m", "pip", "install", "-U", "pip"])
+                run([existing_py, "-m", "pip", "install", "-r", "requirements.txt"])
+            except Exception:
+                print("[install] Failed to install packages using existing .venv")
+                raise
+            return
+
     # Build a list of candidate commands to create a virtualenv.
     # Avoid using sys.executable when it points inside a missing .venv (common in VSCode setups).
     venv_cmds = []
